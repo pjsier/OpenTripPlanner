@@ -14,9 +14,13 @@
 package org.opentripplanner.scripting.api;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.opentripplanner.analyst.request.SampleFactory;
+import org.opentripplanner.routing.core.State;
+import org.opentripplanner.routing.graph.Edge;
+import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.spt.ShortestPathTree;
 
 /**
@@ -62,6 +66,21 @@ public class OtpsSPT {
      */
     public OtpsEvaluatedIndividual eval(OtpsIndividual individual) {
         return individual.eval(spt, sampleFactory);
+    }
+    
+    public double getDistanceGraph() {
+    	List<GraphPath> returnedGraphPaths = spt.getPaths();
+    	GraphPath firstGraph = returnedGraphPaths.get(0);
+    	
+    	LinkedList<Edge> edges = firstGraph.edges;
+    	LinkedList<State> states = firstGraph.states;
+        // Calculate leg distance and fill array of edges
+        double tripDistance = 0.0;
+        for (int i = 0; i < edges.size(); i++) {
+            Edge incEdge = states.get(i + 1).getBackEdge();
+            tripDistance += incEdge.getDistance();
+        }
+    	return tripDistance;
     }
 
     /**
