@@ -51,6 +51,7 @@ Analyst's webinterface was broken by that
 <script src="./js/lib/jquery-ui/i18n/jquery.ui.datepicker-fr.js"></script>
 <script src="./js/lib/jquery-ui/i18n/jquery.ui.datepicker-it.js"></script>
 <script src="./js/lib/jquery-ui/i18n/jquery.ui.datepicker-ca.js"></script>
+<script src="./js/lib/jquery-ui/i18n/jquery.ui.datepicker-pl.js"></script>
 
 <!-- backbone -->
 <script src="js/lib/backbone.js"></script>
@@ -72,6 +73,7 @@ Analyst's webinterface was broken by that
 <script src="js/otp/locale/Slovenian.js?v=1"></script>
 <script src="js/otp/locale/Italian.js?v=1"></script>
 <script src="js/otp/locale/Catalan.js?v=1"></script>
+<script src="js/otp/locale/Polish.js?v=1"></script>
 
 <script src="js/otp/config.js?v=1"></script>
 
@@ -120,7 +122,7 @@ Analyst's webinterface was broken by that
 <script type="text/javascript">
 	//Which modules needs which files
 	var modules = {
-		'otp.modules.bikeshare.BikeShareModule': 
+		'otp.modules.bikeshare.BikeShareModule':
 			[
 			'js/otp/modules/bikeshare/BikeShareModule.js?v=1',
 			'js/otp/modules/bikeshare/BikeStationsWidget.js?v=1'
@@ -158,7 +160,7 @@ Analyst's webinterface was broken by that
 			'js/otp/modules/fieldtrip/SaveFieldTripWidget.js?v=1',
 			'js/otp/modules/fieldtrip/SearchWidget.js?v=1'
 			]
-			
+
 	}
 	for (var moduleIndex = 0; moduleIndex < otp.config.modules.length; moduleIndex++) {
 		var curModuleClass = otp.config.modules[moduleIndex]["className"]
