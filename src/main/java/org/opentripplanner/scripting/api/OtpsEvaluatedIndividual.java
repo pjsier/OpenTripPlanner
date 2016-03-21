@@ -79,8 +79,8 @@ public class OtpsEvaluatedIndividual {
      *         information is available at this point.
      */
     public Double getTotalDistance() {
-        //if (Double.isNaN(totalDistance))
-            //return null;
+        if (Double.isNaN(totalDistance))
+            return null;
         return totalDistance;
     }
 

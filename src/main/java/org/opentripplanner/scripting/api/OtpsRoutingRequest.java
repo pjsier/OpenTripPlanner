@@ -118,8 +118,4 @@ public class OtpsRoutingRequest {
     public void setBannedRoutes(String routeSpecList) {
         req.bannedRoutes = RouteMatcher.parse(routeSpecList);
     }
-    
-    public RoutingRequest getReq() {
-    	return req;
-    }
 }

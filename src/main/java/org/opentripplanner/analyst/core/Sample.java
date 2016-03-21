@@ -76,15 +76,6 @@ public class Sample {
     }
     
     public double evalTotalDistance(ShortestPathTree spt) {
-        State s0 = spt.getState(v0);
-        State s1 = spt.getState(v1);
-        double m0 = Double.NaN;
-        double m1 = Double.NaN;
-        if (s0 != null)
-            m0 = (s0.getWalkDistance() + d0);
-        if (s1 != null)
-            m1 = (s1.getWalkDistance() + d1);
-        
         // Try v0 if that doesn't work
         GraphPath destGraphPath = spt.getPath(v1, false);
         double totalDistance = 0.0;

@@ -13,22 +13,14 @@
 
 package org.opentripplanner.scripting.api;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import org.opentripplanner.analyst.core.Sample;
 import org.opentripplanner.analyst.request.SampleFactory;
-import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
-import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.spt.ShortestPathTree;
-import org.opentripplanner.routing.graph.Vertex;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.linearref.LengthIndexedLine;
-import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
 
 
 /**
@@ -154,44 +146,7 @@ public class OtpsIndividual {
         long time = cachedSample.eval(spt);
         if (time == Long.MAX_VALUE)
             return null;
-        //Collection<State> sptStates = spt.getAllStates();
-        //Set<Vertex> sptVertices = spt.getVertices();
-        //Vertex destVertex = spt.getOptions().getRoutingContext().toVertex;
-        //GraphPath destGraphPath = spt.getPath(destVertex, false);
-        //double totalDistance = 0.0;
-        //totalDistance += destVertex.getX();
-        //totalDistance += sptVertices.size();
-        /*
-        if (destGraphPath != null) {
-        	//GraphPath path = sptGraphPaths.get(0);
-            State[] states = new State[destGraphPath.states.size()];
-            //State lastState = path.states.getLast();
-            states = destGraphPath.states.toArray(states);
-
-            Edge[] edges = new Edge[destGraphPath.edges.size()];
-            edges = destGraphPath.edges.toArray(edges);
-            
-            // Calculate total distance and fill array of edges
-            for (int i = 0; i < edges.length; i++) {
-                edges[i] = states[i + 1].getBackEdge();
-                totalDistance += SphericalDistanceLibrary.distance(edges[i].getFromVertex().getCoordinate(), edges[i].getToVertex().getCoordinate());
-            }
-        }
         
-        //GraphPath path = sptGraphPaths.get(0);
-        State[] states = new State[destGraphPath.states.size()];
-        //State lastState = path.states.getLast();
-        states = destGraphPath.states.toArray(states);
-
-        Edge[] edges = new Edge[destGraphPath.edges.size()];
-        edges = destGraphPath.edges.toArray(edges);
-        
-        // Calculate total distance and fill array of edges
-        for (int i = 0; i < edges.length; i++) {
-            edges[i] = states[i + 1].getBackEdge();
-            totalDistance += SphericalDistanceLibrary.distance(edges[i].getFromVertex().getCoordinate(), edges[i].getToVertex().getCoordinate());
-        }
-        */
         int boardings = cachedSample.evalBoardings(spt);
         double walkDistance = cachedSample.evalWalkDistance(spt);
         double totalDistance = cachedSample.evalTotalDistance(spt);

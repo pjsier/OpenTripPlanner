@@ -13,15 +13,9 @@
 
 package org.opentripplanner.scripting.api;
 
-import java.util.List;
-
-import org.opentripplanner.api.model.TripPlan;
-import org.opentripplanner.api.resource.GraphPathToTripPlanConverter;
 import org.opentripplanner.routing.algorithm.AStar;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.error.VertexNotFoundException;
-import org.opentripplanner.routing.impl.GraphPathFinder;
-import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.spt.ShortestPathTree;
 import org.opentripplanner.standalone.Router;
 
@@ -65,12 +59,5 @@ public class OtpsRouter {
             // Can happen, not really an error
             return null;
         }
-    }
-    
-    public TripPlan getTripPlan(OtpsRoutingRequest req) {
-    	GraphPathFinder gpFinder = new GraphPathFinder(router);
-    	List<GraphPath> paths = gpFinder.graphPathFinderEntryPoint(req.getReq());
-    	TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, req.getReq());
-    	return plan;
     }
 }

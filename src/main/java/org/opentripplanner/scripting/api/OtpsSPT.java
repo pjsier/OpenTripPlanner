@@ -14,13 +14,9 @@
 package org.opentripplanner.scripting.api;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.opentripplanner.analyst.request.SampleFactory;
-import org.opentripplanner.routing.core.State;
-import org.opentripplanner.routing.graph.Edge;
-import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.spt.ShortestPathTree;
 
 /**
