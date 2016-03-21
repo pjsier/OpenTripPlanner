@@ -16,7 +16,11 @@ package org.opentripplanner.analyst.core;
 import org.opentripplanner.analyst.TimeSurface;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.graph.Vertex;
+import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.spt.ShortestPathTree;
+import org.opentripplanner.routing.graph.Edge;
+import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
+
 
 public class Sample {
 
@@ -69,6 +73,39 @@ public class Sample {
         if (s1 != null)
             m1 = (s1.getWalkDistance() + d1);
         return (m0 < m1) ? m0 : m1;
+    }
+    
+    public double evalTotalDistance(ShortestPathTree spt) {
+        State s0 = spt.getState(v0);
+        State s1 = spt.getState(v1);
+        double m0 = Double.NaN;
+        double m1 = Double.NaN;
+        if (s0 != null)
+            m0 = (s0.getWalkDistance() + d0);
+        if (s1 != null)
+            m1 = (s1.getWalkDistance() + d1);
+        
+        // Try v0 if that doesn't work
+        GraphPath destGraphPath = spt.getPath(v1, false);
+        double totalDistance = 0.0;
+        
+        if (destGraphPath != null) {
+        	//GraphPath path = sptGraphPaths.get(0);
+            State[] states = new State[destGraphPath.states.size()];
+            //State lastState = path.states.getLast();
+            states = destGraphPath.states.toArray(states);
+
+            Edge[] edges = new Edge[destGraphPath.edges.size()];
+            edges = destGraphPath.edges.toArray(edges);
+            
+            // Calculate total distance and fill array of edges
+            for (int i = 0; i < edges.length; i++) {
+                edges[i] = states[i + 1].getBackEdge();
+                totalDistance += SphericalDistanceLibrary.distance(edges[i].getFromVertex().getCoordinate(), edges[i].getToVertex().getCoordinate());
+            }
+        }
+        
+        return totalDistance;
     }
 
     /* DUPLICATES code in sampleSet.eval(). should be deduplicated using a common function of vertices/dists. */

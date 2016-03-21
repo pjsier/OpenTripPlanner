@@ -68,21 +68,6 @@ public class OtpsSPT {
         return individual.eval(spt, sampleFactory);
     }
     
-    public double getDistanceGraph() {
-    	List<GraphPath> returnedGraphPaths = spt.getPaths();
-    	GraphPath firstGraph = returnedGraphPaths.get(0);
-    	
-    	LinkedList<Edge> edges = firstGraph.edges;
-    	LinkedList<State> states = firstGraph.states;
-        // Calculate leg distance and fill array of edges
-        double tripDistance = 0.0;
-        for (int i = 0; i < edges.size(); i++) {
-            Edge incEdge = states.get(i + 1).getBackEdge();
-            tripDistance += incEdge.getDistance();
-        }
-    	return tripDistance;
-    }
-
     /**
      * Evaluate the SPT for a whole population.
      * 
