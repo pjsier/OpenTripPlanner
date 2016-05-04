@@ -24,7 +24,7 @@ package org.opentripplanner.updater;
  * Example implementations can be found in ExampleGraphUpdater and ExamplePollingGraphUpdater.
  * 
  * @see ExampleGraphUpdater
- * @see ExamplePollingGraphUpdater
+ * @see AccessibleGraphUpdater
  * @see GraphUpdaterManager.execute
  * @see GraphUpdaterConfigurator
  */
