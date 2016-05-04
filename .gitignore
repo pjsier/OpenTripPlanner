@@ -28,3 +28,6 @@ gen-py/
 _site/
 /otp
 /otp-batch-analyst
+graphs/*
+!graphs/.gitkeep
+.DS_Store
