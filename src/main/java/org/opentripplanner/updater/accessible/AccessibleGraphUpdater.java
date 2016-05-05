@@ -69,6 +69,8 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
         url = config.path("url").asText(); // Can also set this manually for testing
         LOG.info("Configured example polling updater: frequencySec={} and url={}", frequencySec, url);
         this.source = new AccessibleDataSource();
+        // Need to configure to actually pass values to the object
+        this.source.configure(graph, config);
     }
 
     // Here the updater gets to know its parent manager to execute GraphWriterRunnables.
@@ -90,12 +92,20 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
     protected void runPolling() throws Exception {
         LOG.info("Run example polling updater with hashcode: {}", this.hashCode());
         
-        // Gets data from the designated source and URL, returns locations to be processed
-        List<GenericLocation> locations = source.getLocations();
-        AccessibleGraphWriter graphWriter = new AccessibleGraphWriter(locations);
+        // Fetch initial data, and check if was successful
+        if (source.update()) {
+        	// Returns locations to be processed
+        	List<GenericLocation> locations = source.getLocations();
+            LOG.info("Fetched list of " + locations);
+            AccessibleGraphWriter graphWriter = new AccessibleGraphWriter(locations);
+            
+            // Execute example graph writer
+            updaterManager.execute(graphWriter);
+        }
+        else {
+        	LOG.info("Error returned fetching data");
+        }
         
-        // Execute example graph writer
-        updaterManager.execute(graphWriter);
     }
 
     // Here the updater can cleanup after itself.
@@ -133,12 +143,15 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
             for (GenericLocation location : locations) {
             	// Get closest edge to location
             	StreetEdge edgeToModify = accessibleService.getClosestEdges(location, traversalOptions).best.edge;
-            	// Check if active set, change accessibility accordingly
-            	if (location.name == "false") {
+            	
+            	// Check if location is active, change accessibility accordingly
+            	if (location.name.equals("yes")) {
                     edgeToModify.setWheelchairAccessible(false);
+                    LOG.info("Set as NOT wheelchair accessible " + edgeToModify.toString());
             	}
             	else {
                     edgeToModify.setWheelchairAccessible(true);
+                    LOG.info("Set as wheelchair accessible " + edgeToModify.toString());
             	}
             }
         }

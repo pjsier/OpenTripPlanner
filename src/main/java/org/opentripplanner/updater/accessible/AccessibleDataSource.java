@@ -69,7 +69,7 @@ public class AccessibleDataSource implements JsonConfigurable {
 
     public boolean update() {
         try {
-            InputStream data = HttpUtils.getData(url, "ApiKey", apiKey);
+            InputStream data = HttpUtils.getData(url);
             if (data == null) {
                 log.warn("Failed to get data from url " + url);
                 return false;
@@ -94,10 +94,10 @@ public class AccessibleDataSource implements JsonConfigurable {
 
     	ArrayList<GenericLocation> out = new ArrayList<GenericLocation>();
 
-        String rentalString = convertStreamToString(dataStream);
+        String locationString = convertStreamToString(dataStream);
 
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = mapper.readTree(rentalString);
+        JsonNode rootNode = mapper.readTree(locationString);
 
         if (!jsonParsePath.equals("")) {
             String delimiter = "/";
