@@ -13,9 +13,17 @@
 
 package org.opentripplanner.updater.accessible;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.prefs.Preferences;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import org.opentripplanner.common.model.GenericLocation;
+import org.opentripplanner.routing.core.RoutingRequest;
+import org.opentripplanner.routing.core.TraversalRequirements;
+import org.opentripplanner.routing.core.TraverseModeSet;
+import org.opentripplanner.routing.edgetype.StreetEdge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.updater.GraphUpdaterManager;
 import org.opentripplanner.updater.GraphWriterRunnable;
@@ -51,13 +59,16 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
     private GraphUpdaterManager updaterManager;
 
     private String url;
+    
+    private AccessibleDataSource source;
 
     // Here the updater can be configured using the properties in the file 'Graph.properties'.
     // The property frequencySec is already read and used by the abstract base class.
     @Override
     protected void configurePolling(Graph graph, JsonNode config) throws Exception {
-        url = config.path("url").asText();
+        url = config.path("url").asText(); // Can also set this manually for testing
         LOG.info("Configured example polling updater: frequencySec={} and url={}", frequencySec, url);
+        this.source = new AccessibleDataSource();
     }
 
     // Here the updater gets to know its parent manager to execute GraphWriterRunnables.
@@ -76,10 +87,15 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
     // This is where the updater thread receives updates and applies them to the graph.
     // This method will be called every frequencySec seconds.
     @Override
-    protected void runPolling() {
+    protected void runPolling() throws Exception {
         LOG.info("Run example polling updater with hashcode: {}", this.hashCode());
+        
+        // Gets data from the designated source and URL, returns locations to be processed
+        List<GenericLocation> locations = source.getLocations();
+        AccessibleGraphWriter graphWriter = new AccessibleGraphWriter(locations);
+        
         // Execute example graph writer
-        updaterManager.execute(new AccessibleGraphWriter());
+        updaterManager.execute(graphWriter);
     }
 
     // Here the updater can cleanup after itself.
@@ -90,12 +106,41 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
     
     // This is a private GraphWriterRunnable that can be executed to modify the graph
     private class AccessibleGraphWriter implements GraphWriterRunnable {
+    	
+    	private List<GenericLocation> locations;
+    	
+    	public AccessibleGraphWriter(List<GenericLocation> locations) {
+            this.locations = locations;
+        }
+    	
         @Override
         public void run(Graph graph) {
             LOG.info("AccessibleGraphWriter {} runnable is run on the "
                             + "graph writer scheduler.", this.hashCode());
-            // Create service for finding nearest street edge to point
+            
+            // Create test location outside of Daley Center
+            //GenericLocation hazardPoint = new GenericLocation(41.884432, -87.630476);
+            
+            // Create service for finding nearest street edge to location
             StreetVertexIndexServiceImpl accessibleService = new StreetVertexIndexServiceImpl(graph);
+            
+            // Make RoutingRequest and accessible Traversal for running the index service
+            RoutingRequest req = new RoutingRequest();
+            req.setModes(new TraverseModeSet("WALK"));
+            req.setWheelchairAccessible(true);
+            TraversalRequirements traversalOptions = new TraversalRequirements(req);
+            
+            for (GenericLocation location : locations) {
+            	// Get closest edge to location
+            	StreetEdge edgeToModify = accessibleService.getClosestEdges(location, traversalOptions).best.edge;
+            	// Check if active set, change accessibility accordingly
+            	if (location.name == "false") {
+                    edgeToModify.setWheelchairAccessible(false);
+            	}
+            	else {
+                    edgeToModify.setWheelchairAccessible(true);
+            	}
+            }
         }
     }
 }
