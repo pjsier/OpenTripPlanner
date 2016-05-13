@@ -13,6 +13,8 @@
 
 package org.opentripplanner.updater.accessible;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.prefs.Preferences;
@@ -24,6 +26,7 @@ import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.TraversalRequirements;
 import org.opentripplanner.routing.core.TraverseModeSet;
 import org.opentripplanner.routing.edgetype.StreetEdge;
+import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.updater.GraphUpdaterManager;
 import org.opentripplanner.updater.GraphWriterRunnable;
@@ -146,14 +149,36 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
             	
             	// Check if location is active, change accessibility accordingly
             	if (location.name.equals("yes")) {
+            		//int edgeId = edgeToModify.getId();
+            		//Edge modEdge = graph.getEdgeById(edgeId);
+            		
+            		//modEdge.setWheelchairAccessible(false);
+            		
                     edgeToModify.setWheelchairAccessible(false);
                     LOG.info("Set as NOT wheelchair accessible " + edgeToModify.toString());
+            		/*
+            		if (edgeToModify.isWheelchairAccessible()) {
+            			LOG.info("Location is wheelchair accessible " + edgeToModify.toString());
+            		}
+            		else {
+            			LOG.info("Location is NOT wheelchair accessible " + edgeToModify.toString());
+            		}
+            		*/
             	}
             	else {
                     edgeToModify.setWheelchairAccessible(true);
                     LOG.info("Set as wheelchair accessible " + edgeToModify.toString());
             	}
             }
+            /*
+            File graphFile = new File("/Users/pjsier/Code/OpenTripPlanner/graphs/chicago/Graph.obj");
+            try {
+				graph.save(graphFile);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			*/
         }
     }
 }
