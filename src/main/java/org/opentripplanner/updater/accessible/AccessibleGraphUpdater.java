@@ -131,16 +131,15 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
             LOG.info("AccessibleGraphWriter {} runnable is run on the "
                             + "graph writer scheduler.", this.hashCode());
             
-            // Create test location outside of Daley Center
-            //GenericLocation hazardPoint = new GenericLocation(41.884432, -87.630476);
-            
             // Create service for finding nearest street edge to location
             StreetVertexIndexServiceImpl accessibleService = new StreetVertexIndexServiceImpl(graph);
             
-            // Make RoutingRequest and accessible Traversal for running the index service
+            // Make RoutingRequest and Traversal for running the index service
             RoutingRequest req = new RoutingRequest();
             req.setModes(new TraverseModeSet("WALK"));
-            req.setWheelchairAccessible(true);
+            
+            // Can't set req accessible, otherwise won't be able to turn back on edges that are not accessible
+            // req.setWheelchairAccessible(true);
             TraversalRequirements traversalOptions = new TraversalRequirements(req);
             
             for (GenericLocation location : locations) {
@@ -149,21 +148,15 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
             	
             	// Check if location is active, change accessibility accordingly
             	if (location.name.equals("yes")) {
-            		//int edgeId = edgeToModify.getId();
-            		//Edge modEdge = graph.getEdgeById(edgeId);
-            		
-            		//modEdge.setWheelchairAccessible(false);
-            		
                     edgeToModify.setWheelchairAccessible(false);
                     LOG.info("Set as NOT wheelchair accessible " + edgeToModify.toString());
-            		/*
+            		
             		if (edgeToModify.isWheelchairAccessible()) {
             			LOG.info("Location is wheelchair accessible " + edgeToModify.toString());
             		}
             		else {
             			LOG.info("Location is NOT wheelchair accessible " + edgeToModify.toString());
             		}
-            		*/
             	}
             	else {
                     edgeToModify.setWheelchairAccessible(true);
