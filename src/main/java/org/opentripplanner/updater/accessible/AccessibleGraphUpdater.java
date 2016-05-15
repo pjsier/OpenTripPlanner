@@ -33,6 +33,7 @@ import org.opentripplanner.updater.GraphWriterRunnable;
 import org.opentripplanner.updater.PollingGraphUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.opentripplanner.routing.impl.CandidateEdgeBundle;
 import org.opentripplanner.routing.impl.StreetVertexIndexServiceImpl;
 
 /**
@@ -143,27 +144,30 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
             TraversalRequirements traversalOptions = new TraversalRequirements(req);
             
             for (GenericLocation location : locations) {
-            	// Get closest edge to location
-            	StreetEdge edgeToModify = accessibleService.getClosestEdges(location, traversalOptions).best.edge;
+            	// Check if returns any edges, if so get best edge
+            	CandidateEdgeBundle edgeResults = accessibleService.getClosestEdges(location, traversalOptions);
+            	if (edgeResults.size() > 0) {
+            		StreetEdge edgeToModify = accessibleService.getClosestEdges(location, traversalOptions).best.edge;
+            		// Check if location is active, change accessibility accordingly
+                	if (location.name.equals("open")) {
+                        edgeToModify.setWheelchairAccessible(false);
+                        LOG.info("Set as NOT wheelchair accessible " + edgeToModify.toString());
+                		
+                		if (edgeToModify.isWheelchairAccessible()) {
+                			LOG.info("Location is wheelchair accessible " + edgeToModify.toString());
+                		}
+                		else {
+                			LOG.info("Location is NOT wheelchair accessible " + edgeToModify.toString());
+                		}
+                	}
+                	else {
+                        edgeToModify.setWheelchairAccessible(true);
+                        LOG.info("Set as wheelchair accessible " + edgeToModify.toString());
+                	}
+            	}
             	
-            	// Check if location is active, change accessibility accordingly
-            	if (location.name.equals("yes")) {
-                    edgeToModify.setWheelchairAccessible(false);
-                    LOG.info("Set as NOT wheelchair accessible " + edgeToModify.toString());
-            		
-            		if (edgeToModify.isWheelchairAccessible()) {
-            			LOG.info("Location is wheelchair accessible " + edgeToModify.toString());
-            		}
-            		else {
-            			LOG.info("Location is NOT wheelchair accessible " + edgeToModify.toString());
-            		}
-            	}
-            	else {
-                    edgeToModify.setWheelchairAccessible(true);
-                    LOG.info("Set as wheelchair accessible " + edgeToModify.toString());
-            	}
             }
-            /*
+            
             File graphFile = new File("/Users/pjsier/Code/OpenTripPlanner/graphs/chicago/Graph.obj");
             try {
 				graph.save(graphFile);
@@ -171,7 +175,7 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			*/
+			
         }
     }
 }

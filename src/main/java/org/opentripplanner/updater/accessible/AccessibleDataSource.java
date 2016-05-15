@@ -117,7 +117,7 @@ public class AccessibleDataSource implements JsonConfigurable {
                 continue;
             }
             // Parse for active as way of determining whether to turn on or off wheelchair accessibility
-            String active = node.path("active").asText();
+            String active = node.path("status").asText();
             String coordinates = node.path("coords").asText();
             GenericLocation locationNode = new GenericLocation(active, coordinates);
             if (locationNode != null)
