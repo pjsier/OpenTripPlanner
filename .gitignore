@@ -30,4 +30,6 @@ _site/
 /otp-batch-analyst
 graphs/*
 !graphs/.gitkeep
+!graphs/chicago/.gitkeep
+!graphs/chicago/router-config.json
 .DS_Store

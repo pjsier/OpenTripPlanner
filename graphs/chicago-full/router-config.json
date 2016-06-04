@@ -1,0 +1,12 @@
+{
+  "routingDefaults": {
+    "wheelchairAccessible": "true"
+  },
+  "updaters": [
+      {
+          "type": "accessibility",
+          "frequencySec": -1,
+          "url": "http://chisafepath.com/json_issues"
+      }
+    ]
+}
