@@ -24,6 +24,9 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -45,6 +48,25 @@ public class HttpUtils {
         }
         HttpClient httpclient = getClient();
         HttpResponse response = httpclient.execute(httpget);
+        if(response.getStatusLine().getStatusCode() != 200)
+            return null;
+
+        HttpEntity entity = response.getEntity();
+        if (entity == null) {
+            return null;
+        }
+        return entity.getContent();
+    }
+    
+    public static InputStream postJsonData(String url, String requestValue) throws ClientProtocolException, IOException {
+    	HttpClient postClient = HttpClientBuilder.create().build();
+    	HttpPost request = new HttpPost(url);
+    	StringEntity params = new StringEntity(requestValue);
+        request.addHeader("content-type", "application/json");
+        request.setEntity(params);
+        
+        HttpResponse response = postClient.execute(request);
+        
         if(response.getStatusLine().getStatusCode() != 200)
             return null;
 

@@ -30,6 +30,7 @@ public class AccessibleDataSource implements JsonConfigurable {
     private String apiKey;
 
     private String jsonParsePath;
+    private String idsParsed;
 
     ArrayList<GenericLocation> locations = new ArrayList<GenericLocation>();
 
@@ -93,7 +94,8 @@ public class AccessibleDataSource implements JsonConfigurable {
       IOException {
 
     	ArrayList<GenericLocation> out = new ArrayList<GenericLocation>();
-
+    	idsParsed = "{\"id\": [";
+    	
         String locationString = convertStreamToString(dataStream);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -118,13 +120,22 @@ public class AccessibleDataSource implements JsonConfigurable {
             }
             // Parse for active as way of determining whether to turn on or off wheelchair accessibility
             String active = node.path("status").asText();
+            // Can add ids here to reply to Rails with
             String coordinates = node.path("coords").asText();
             GenericLocation locationNode = new GenericLocation(active, coordinates);
             if (locationNode != null)
                 out.add(locationNode);
+            	idsParsed += node.path("id").asText();
+            	if (i < (rootNode.size() - 1)) {
+            		idsParsed += ",";
+            	}
         }
         synchronized(this) {
             locations = out;
+        }
+        idsParsed += "]}";
+        if (!(out.isEmpty())) {
+        	HttpUtils.postJsonData("http://localhost:3000/otp_reply", idsParsed);
         }
     }
 
