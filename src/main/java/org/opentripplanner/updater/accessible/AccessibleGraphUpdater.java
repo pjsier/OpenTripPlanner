@@ -40,19 +40,19 @@ import org.opentripplanner.routing.impl.StreetVertexIndexServiceImpl;
  * This class shows an example of how to implement a polling graph updater. Besides implementing the
  * methods of the interface PollingGraphUpdater, the updater also needs to be registered in the
  * function GraphUpdaterConfigurator.applyConfigurationToGraph.
- * 
+ *
  * This example is suited for polling updaters. For streaming updaters (aka push updaters) it is
  * better to use the GraphUpdater interface directly for this purpose. The class ExampleGraphUpdater
  * shows an example of how to implement this.
- * 
+ *
  * Usage example ('polling-example' name is an example) in file 'Graph.properties':
- * 
+ *
  * <pre>
  * polling-example.type = example-polling-updater
  * polling-example.frequencySec = 60
  * polling-example.url = https://api.updater.com/example-polling-updater
  * </pre>
- * 
+ *
  * @see ExampleGraphUpdater
  * @see GraphUpdaterConfigurator.applyConfigurationToGraph
  */
@@ -63,7 +63,7 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
     private GraphUpdaterManager updaterManager;
 
     private String url;
-    
+
     private AccessibleDataSource source;
 
     // Here the updater can be configured using the properties in the file 'Graph.properties'.
@@ -95,21 +95,21 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
     @Override
     protected void runPolling() throws Exception {
         LOG.info("Run example polling updater with hashcode: {}", this.hashCode());
-        
+
         // Fetch initial data, and check if was successful
         if (source.update()) {
         	// Returns locations to be processed
         	List<GenericLocation> locations = source.getLocations();
             LOG.info("Fetched list of " + locations);
             AccessibleGraphWriter graphWriter = new AccessibleGraphWriter(locations);
-            
+
             // Execute example graph writer
             updaterManager.execute(graphWriter);
         }
         else {
         	LOG.info("Error returned fetching data");
         }
-        
+
     }
 
     // Here the updater can cleanup after itself.
@@ -117,32 +117,32 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
     public void teardown() {
         LOG.info("Teardown example polling updater");
     }
-    
+
     // This is a private GraphWriterRunnable that can be executed to modify the graph
     private class AccessibleGraphWriter implements GraphWriterRunnable {
-    	
+
     	private List<GenericLocation> locations;
-    	
+
     	public AccessibleGraphWriter(List<GenericLocation> locations) {
             this.locations = locations;
         }
-    	
+
         @Override
         public void run(Graph graph) {
             LOG.info("AccessibleGraphWriter {} runnable is run on the "
                             + "graph writer scheduler.", this.hashCode());
-            
+
             // Create service for finding nearest street edge to location
             StreetVertexIndexServiceImpl accessibleService = new StreetVertexIndexServiceImpl(graph);
-            
+
             // Make RoutingRequest and Traversal for running the index service
             RoutingRequest req = new RoutingRequest();
             req.setModes(new TraverseModeSet("WALK"));
-            
+
             // Can't set req accessible, otherwise won't be able to turn back on edges that are not accessible
             // req.setWheelchairAccessible(true);
             TraversalRequirements traversalOptions = new TraversalRequirements(req);
-            
+
             for (GenericLocation location : locations) {
             	// Check if returns any edges, if so get best edge
             	CandidateEdgeBundle edgeResults = accessibleService.getClosestEdges(location, traversalOptions);
@@ -152,7 +152,7 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
                 	if (location.name.equals("open")) {
                         edgeToModify.setWheelchairAccessible(false);
                         LOG.info("Set as NOT wheelchair accessible " + edgeToModify.toString());
-                		
+
                 		if (edgeToModify.isWheelchairAccessible()) {
                 			LOG.info("Location is wheelchair accessible " + edgeToModify.toString());
                 		}
@@ -165,17 +165,17 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
                         LOG.info("Set as wheelchair accessible " + edgeToModify.toString());
                 	}
             	}
-            	
+
             }
-            
-            File graphFile = new File("/Users/pjsier/Code/OpenTripPlanner/graphs/chicago/Graph.obj");
+
+            File graphFile = new File("/var/otp/graphs/chicago/Graph.obj");
             try {
 				graph.save(graphFile);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
         }
     }
 }
