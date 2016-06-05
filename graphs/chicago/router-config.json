@@ -5,7 +5,7 @@
   "updaters": [
       {
           "type": "accessibility",
-          "frequencySec": -1,
+          "frequencySec": 1800,
           "url": "http://chisafepath.com/json_issues"
       }
     ]

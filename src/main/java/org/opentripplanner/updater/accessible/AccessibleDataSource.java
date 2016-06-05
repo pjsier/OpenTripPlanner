@@ -95,7 +95,7 @@ public class AccessibleDataSource implements JsonConfigurable {
 
     	ArrayList<GenericLocation> out = new ArrayList<GenericLocation>();
     	idsParsed = "{\"id\": [";
-    	
+
         String locationString = convertStreamToString(dataStream);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -135,7 +135,7 @@ public class AccessibleDataSource implements JsonConfigurable {
         }
         idsParsed += "]}";
         if (!(out.isEmpty())) {
-        	HttpUtils.postJsonData("http://localhost:3000/otp_reply", idsParsed);
+        	HttpUtils.postJsonData("http://chisafepath.com/otp_reply", idsParsed);
         }
     }
 
@@ -143,7 +143,7 @@ public class AccessibleDataSource implements JsonConfigurable {
         java.util.Scanner scanner = null;
         String result="";
         try {
-           
+
             scanner = new java.util.Scanner(is).useDelimiter("\\A");
             result = scanner.hasNext() ? scanner.next() : "";
             scanner.close();
@@ -154,7 +154,7 @@ public class AccessibleDataSource implements JsonConfigurable {
                scanner.close();
         }
         return result;
-        
+
     }
 
     //@Override
