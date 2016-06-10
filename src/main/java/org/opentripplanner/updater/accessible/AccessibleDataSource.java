@@ -2,7 +2,10 @@ package org.opentripplanner.updater.accessible;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -27,10 +30,7 @@ public class AccessibleDataSource implements JsonConfigurable {
 
     private static final Logger log = LoggerFactory.getLogger(AccessibleDataSource.class);
     private String url;
-    private String apiKey;
-
     private String jsonParsePath;
-    private String idsParsed;
 
     ArrayList<GenericLocation> locations = new ArrayList<GenericLocation>();
 
@@ -43,7 +43,6 @@ public class AccessibleDataSource implements JsonConfigurable {
      */
     public AccessibleDataSource(String jsonPath) {
         jsonParsePath = jsonPath;
-        apiKey= null;
     }
 
     /**
@@ -56,7 +55,6 @@ public class AccessibleDataSource implements JsonConfigurable {
      */
     public AccessibleDataSource(String jsonPath, String apiKeyValue) {
         jsonParsePath = jsonPath;
-        apiKey = apiKeyValue;
     }
 
 
@@ -70,6 +68,16 @@ public class AccessibleDataSource implements JsonConfigurable {
 
     public boolean update() {
         try {
+        	// Look for all issues updated in past 30 minutes (padding time)
+        	Date now = new Date();
+        	Calendar cal = Calendar.getInstance();
+        	cal.setTime(now);
+        	cal.add(Calendar.MINUTE, -30);
+        	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+        	formatter.setTimeZone(cal.getTimeZone());
+        	String dateString = formatter.format(cal.getTime());
+        	url += "?updated_at=" + dateString;
+        	
             InputStream data = HttpUtils.getData(url);
             if (data == null) {
                 log.warn("Failed to get data from url " + url);
@@ -94,9 +102,9 @@ public class AccessibleDataSource implements JsonConfigurable {
       IOException {
 
     	ArrayList<GenericLocation> out = new ArrayList<GenericLocation>();
-    	idsParsed = "{\"id\": [";
 
         String locationString = convertStreamToString(dataStream);
+        log.info(locationString);
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(locationString);
@@ -120,22 +128,13 @@ public class AccessibleDataSource implements JsonConfigurable {
             }
             // Parse for active as way of determining whether to turn on or off wheelchair accessibility
             String active = node.path("status").asText();
-            // Can add ids here to reply to Rails with
             String coordinates = node.path("coords").asText();
             GenericLocation locationNode = new GenericLocation(active, coordinates);
             if (locationNode != null)
                 out.add(locationNode);
-            	idsParsed += node.path("id").asText();
-            	if (i < (rootNode.size() - 1)) {
-            		idsParsed += ",";
-            	}
         }
         synchronized(this) {
             locations = out;
-        }
-        idsParsed += "]}";
-        if (!(out.isEmpty())) {
-        	HttpUtils.postJsonData("http://chisafepath.com/otp_reply", idsParsed);
         }
     }
 
@@ -143,7 +142,6 @@ public class AccessibleDataSource implements JsonConfigurable {
         java.util.Scanner scanner = null;
         String result="";
         try {
-
             scanner = new java.util.Scanner(is).useDelimiter("\\A");
             result = scanner.hasNext() ? scanner.next() : "";
             scanner.close();

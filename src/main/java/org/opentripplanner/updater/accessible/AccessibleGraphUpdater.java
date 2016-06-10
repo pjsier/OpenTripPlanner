@@ -140,7 +140,6 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
             req.setModes(new TraverseModeSet("WALK"));
 
             // Can't set req accessible, otherwise won't be able to turn back on edges that are not accessible
-            // req.setWheelchairAccessible(true);
             TraversalRequirements traversalOptions = new TraversalRequirements(req);
 
             for (GenericLocation location : locations) {
@@ -152,13 +151,6 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
                 	if (location.name.equals("open")) {
                         edgeToModify.setWheelchairAccessible(false);
                         LOG.info("Set as NOT wheelchair accessible " + edgeToModify.toString());
-
-                		if (edgeToModify.isWheelchairAccessible()) {
-                			LOG.info("Location is wheelchair accessible " + edgeToModify.toString());
-                		}
-                		else {
-                			LOG.info("Location is NOT wheelchair accessible " + edgeToModify.toString());
-                		}
                 	}
                 	else {
                         edgeToModify.setWheelchairAccessible(true);
