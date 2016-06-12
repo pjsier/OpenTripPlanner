@@ -160,7 +160,9 @@ public class AccessibleGraphUpdater extends PollingGraphUpdater {
 
             }
 
-            File graphFile = new File("/var/otp/graphs/chicago/Graph.obj");
+            // PRODUCTION LOCATION
+            // File graphFile = new File("/var/otp/graphs/chicago/Graph.obj");
+            File graphFile = new File("/Users/pjsier/Code/OpenTripPlanner/graphs/chicago/Graph.obj");
             try {
 				graph.save(graphFile);
 			} catch (IOException e) {

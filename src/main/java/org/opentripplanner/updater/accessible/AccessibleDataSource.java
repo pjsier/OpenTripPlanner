@@ -29,6 +29,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class AccessibleDataSource implements JsonConfigurable {
 
     private static final Logger log = LoggerFactory.getLogger(AccessibleDataSource.class);
+    // URL set in configuration file, should be the production or test API 
+    // http://311api.cityofchicago.org/open311/v2/requests.json
     private String url;
     private String jsonParsePath;
 
@@ -73,14 +75,17 @@ public class AccessibleDataSource implements JsonConfigurable {
         	Calendar cal = Calendar.getInstance();
         	cal.setTime(now);
         	cal.add(Calendar.MINUTE, -30);
-        	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+        	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         	formatter.setTimeZone(cal.getTimeZone());
-        	String dateString = formatter.format(cal.getTime());
-        	url += "?updated_at=" + dateString;
+        	String dateString = formatter.format(cal.getTime()) + "-05:00";
         	
-            InputStream data = HttpUtils.getData(url);
+        	String apiEndpoint = url;
+        	apiEndpoint += "?service_code=4ffa971e6018277d4000000b&page_size=500";
+        	apiEndpoint += "&updated_after=" + dateString;
+        	
+            InputStream data = HttpUtils.getData(apiEndpoint);
             if (data == null) {
-                log.warn("Failed to get data from url " + url);
+                log.warn("Failed to get data from url " + apiEndpoint);
                 return false;
             }
             parseJSON(data);
@@ -128,7 +133,9 @@ public class AccessibleDataSource implements JsonConfigurable {
             }
             // Parse for active as way of determining whether to turn on or off wheelchair accessibility
             String active = node.path("status").asText();
-            String coordinates = node.path("coords").asText();
+            String lat = node.path("lat").asText();
+            String lon = node.path("long").asText();
+            String coordinates = lat + "," +lon;
             GenericLocation locationNode = new GenericLocation(active, coordinates);
             if (locationNode != null)
                 out.add(locationNode);
