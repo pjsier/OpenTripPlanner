@@ -7,6 +7,11 @@
           "type": "accessibility",
           "frequencySec": 1800,
           "url": "http://311api.cityofchicago.org/open311/v2/requests.json"
+      },
+      {
+        "type": "accessibility",
+        "frequencySec": -1,
+        "url": "https://a3d5c976ba27e760c06004bfafe062d2456b40da.googledrive.com/host/0B_QE7itsD1z8M3VaeHAyTkpKY00"
       }
     ]
 }
