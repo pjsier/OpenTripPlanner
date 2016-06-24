@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class AccessibleDataSource implements JsonConfigurable {
 
     private static final Logger log = LoggerFactory.getLogger(AccessibleDataSource.class);
-    // URL set in configuration file, should be the production or test API 
+    // URL set in configuration file, should be the production or test API
     // http://311api.cityofchicago.org/open311/v2/requests.json
     private String url;
     private String jsonParsePath;
@@ -71,18 +71,19 @@ public class AccessibleDataSource implements JsonConfigurable {
     public boolean update() {
         try {
         	// Look for all issues updated in past 30 minutes (padding time)
-        	Date now = new Date();
-        	Calendar cal = Calendar.getInstance();
-        	cal.setTime(now);
-        	cal.add(Calendar.MINUTE, -30);
-        	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        	formatter.setTimeZone(cal.getTimeZone());
-        	String dateString = formatter.format(cal.getTime()) + "-05:00";
-        	
+//        	Date now = new Date();
+//        	Calendar cal = Calendar.getInstance();
+//        	cal.setTime(now);
+//        	cal.add(Calendar.MINUTE, -30);
+//        	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//        	formatter.setTimeZone(cal.getTimeZone());
+//        	String dateString = formatter.format(cal.getTime()) + "-05:00";
+
         	String apiEndpoint = url;
-        	apiEndpoint += "?service_code=4ffa971e6018277d4000000b&page_size=500";
-        	apiEndpoint += "&updated_after=" + dateString;
-        	
+        	apiEndpoint += "?service_code=4ffa971e6018277d4000000b";
+        	//apiEndpoint += "&updated_after=" + dateString;
+        	log.info("API URL: " + apiEndpoint);
+
             InputStream data = HttpUtils.getData(apiEndpoint);
             if (data == null) {
                 log.warn("Failed to get data from url " + apiEndpoint);
@@ -109,7 +110,7 @@ public class AccessibleDataSource implements JsonConfigurable {
     	ArrayList<GenericLocation> out = new ArrayList<GenericLocation>();
 
         String locationString = convertStreamToString(dataStream);
-        log.info(locationString);
+        //log.info(locationString);
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(locationString);
