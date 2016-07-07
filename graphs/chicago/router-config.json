@@ -6,7 +6,7 @@
       {
           "type": "accessibility",
           "frequencySec": 1800,
-          "url": "http://311api.cityofchicago.org/open311/v2/requests.json"
+          "url": "http://311api.cityofchicago.org/open311/v2/requests.json?service_code=4ffa971e6018277d4000000b"
       },
       {
         "type": "accessibility",
